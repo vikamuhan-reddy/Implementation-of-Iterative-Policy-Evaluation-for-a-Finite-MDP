@@ -186,5 +186,7 @@ The iterative policy evaluation algorithm was successfully implemented using the
 
 # Inference
 • The random policy converged after approximately 131 iterations using iterative policy evaluation.
+
 • States closer to the goal obtained higher state values, while hole and terminal states had a value of 0.
+
 • The computed state-value function represents the expected discounted return for each state under the fixed random policy.
