@@ -117,59 +117,68 @@ The algorithm repeatedly applies the Bellman expectation update until the maximu
 import gymnasium as gym
 import numpy as np
 
-# -------------------------------------------------
-# Create Environment
-# -------------------------------------------------
-env = gym.make("FrozenLake-v1", is_slippery=True)
+# Create FrozenLake environment
+env = gym.make("FrozenLake-v1", map_name="4x4", is_slippery=True)
+
+# Access the unwrapped environment to use the transition model
 env = env.unwrapped
+print(env)
 
-num_states = env.observation_space.n
-num_actions = env.action_space.n
+# Number of states and actions
+n_states = env.observation_space.n
+n_actions = env.action_space.n
 
-# -------------------------------------------------
-# Random Policy
-# -------------------------------------------------
-policy = np.ones((num_states, num_actions)) / num_actions
+# Parameters
+gamma = 0.99
+theta = 1e-8
+
+# Random policy: each action has equal probability
+policy = np.ones((n_states, n_actions)) / n_actions
 
 # -------------------------------------------------
 # Policy Evaluation Function
 # -------------------------------------------------
 def policy_evaluation(policy, env, gamma=0.99, theta=1e-8):
-    V = np.zeros(num_states)
+    V = np.zeros(n_states)
     iterations = 0
+    delta_history = []  # To store delta at each iteration
 
     while True:
         delta = 0
 
-        for state in range(num_states):
+        for state in range(n_states):
             v = 0
-
             for action, action_prob in enumerate(policy[state]):
                 for prob, next_state, reward, done in env.P[state][action]:
-                    v += action_prob * prob * (
-                        reward + gamma * V[next_state] * (not done)
-                    )
+                    v += action_prob * prob * (reward + gamma * V[next_state] * (not done))
 
             delta = max(delta, abs(v - V[state]))
             V[state] = v
 
         iterations += 1
+        delta_history.append(delta)
 
         if delta < theta:
             break
 
-    return V, iterations
+    return V, iterations, delta_history
 
-# -------------------------------------------------
-# Display Output
-# -------------------------------------------------
-V, iterations = policy_evaluation(policy, env)
+# Run policy evaluation
+V, iterations, delta_history = policy_evaluation(policy, env, gamma, theta)
 
-print("Number of Iterations:", iterations)
-print("\nState-Value Function as 4x4 Grid:\n")
-print(np.round(V.reshape((4, 4)), 4))
+print("Name: Vikamuhan Reddy")
+print("Register Number: 212223240181")
+print("Number of iterations:", iterations)
+print("\nState-Value Function:")
+print(V)
+
+print("Name: Vikamuhan Reddy")
+print("Register Number: 212223240181")
+print("\nState-Value Function as 4x4 Grid:")
+print(np.round(V.reshape(4, 4), 4))
+
+env.close()
 ```
-
 ---
 
 # Output
